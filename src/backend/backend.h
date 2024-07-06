@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "config.h"
+#include "backend_config.h"
 #include "env_pack/ep.h"
 #include "../common/variables.h"
 
@@ -31,7 +31,6 @@ namespace NerMCManager
         fs::path get_running_gi_dir();
         fs::path get_logs_dir();
         fs::path get_download_temp_dir();
-        fs::path get_runtime_db_path();
 
         // work with ep
         fs::path get_cached_ep_dir();

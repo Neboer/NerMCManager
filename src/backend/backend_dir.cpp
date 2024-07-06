@@ -27,8 +27,4 @@ namespace NerMCManager
     {
         return config.data_dir / "download_temp";
     }
-    fs::path Backend::get_runtime_db_path()
-    {
-        return config.data_dir / "runtime.db";
-    }
 }

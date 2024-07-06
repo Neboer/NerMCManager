@@ -70,7 +70,6 @@ namespace NerMCManager
         ep_info["version"] = new_ep_version;
         
         // rename directory
-        fs::path ep_dir = get_cached_ep_dir() / ep_fs_name;
         fs::path new_ep_dir = get_cached_ep_dir() / new_ep_fs_name;
         fs::rename(ep_dir, new_ep_dir);
 
@@ -78,5 +77,31 @@ namespace NerMCManager
         write_json_file(new_ep_dir / "ep_info.json", ep_info);
 
         return EnvPack::parse_from_json(ep_info);
+    }
+
+    std::vector<EnvPack> Backend::get_env_packs()
+    {
+        std::vector<EnvPack> env_packs;
+        std::vector<str> ep_names = get_env_pack_names();
+        for (str ep_fs_name : ep_names)
+        {
+            fs::path ep_dir = get_cached_ep_dir() / ep_fs_name;
+            json ep_info = parse_json_file(ep_dir / "ep_info.json");
+            env_packs.push_back(EnvPack::parse_from_json(ep_info));
+        }
+        return env_packs;
+    }
+
+    std::vector<str> Backend::get_env_pack_names()
+    {
+        std::vector<str> ep_names;
+        for (const auto &entry : fs::directory_iterator(get_cached_ep_dir()))
+        {
+            if (entry.is_directory())
+            {
+                ep_names.push_back(entry.path().filename());
+            }
+        }
+        return ep_names;
     }
 }
