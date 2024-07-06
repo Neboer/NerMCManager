@@ -1,30 +1,28 @@
 #pragma once
-#include "../config.h"
-#include "ep_config.h"
+#include <string>
 #include "../../common/variables.h"
 #include <nlohmann/json.hpp>
-#include <string>
-#include <fstream>
-#include <filesystem>
 
-using str = std::string;
 using json = nlohmann::json;
-namespace fs = std::filesystem;
+using str = std::string;
 
 namespace NerMCManager
 {
-    class EnvironmentPack
+    class EnvPack
     {
     public:
         str name;
         str version;
-        str hash; // hash is calculated from folder's full content. ()
 
         str game_version;
         ModPlatform mod_platform;
         str mod_platform_version;
-        EnvironmentPack(EpConfig ep_config);
-        // the process of creating/deleting an ep is not handled here. It is handled in the backend.
-        // static EnvironmentPack import_from_path(fs::path ep_path, fs::path backend_ep_dir, );
+        str java_version;
+        str startup_output;
+
+        EnvPack(str name, str version, str game_version, ModPlatform mod_platform, str mod_platform_version, str java_version, str startup_output);
+        static EnvPack parse_from_json(json ep_json);
+
+        str get_fs_name();
     };
 }

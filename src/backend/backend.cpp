@@ -1,10 +1,9 @@
-#include <iostream>
-#include <nlohmann/json.hpp>
+#include "backend.h"
 
-using json = nlohmann::json;
-
-int main()
+namespace NerMCManager
 {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    Backend::Backend(BackendConfig config)
+    {
+        this->config = config;
+    }
 }

@@ -1,13 +1,15 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "config.h"
-#include "env_pack/ep_config.h"
+#include "env_pack/ep.h"
+#include "../common/variables.h"
 
 namespace NerMCManager
 {
     struct Arguments
     {
-        std::string config_path;
+        fs::path config_path;
     };
 
     class Backend
@@ -15,17 +17,15 @@ namespace NerMCManager
     public:
         Backend(BackendConfig config);
 
-        EpConfig create_environment_pack(fs::path new_ep_dir);
-        EpConfig delete_environment_pack(str ep_name, str ep_version);
-        EpConfig delete_environment_pack(str ep_id);
-        EpConfig rename_environment_pack(str )
+        EnvPack create_env_pack(fs::path new_ep_dir);
+        void delete_env_pack(str ep_name, str ep_version);
+        EnvPack rename_env_pack(str ep_name, str ep_version, str new_ep_name, str new_ep_version);
+        std::vector<EnvPack> get_env_packs();
 
     private:
-        fs::path data_dir;
-        std::map<str, fs::path> java_versions;
+        BackendConfig config;
 
         // get path of different data dirs.
-        fs::path get_cached_ep_dir();
         fs::path get_wd_dir();
         fs::path get_gi_configs_dir();
         fs::path get_running_gi_dir();
@@ -34,7 +34,8 @@ namespace NerMCManager
         fs::path get_runtime_db_path();
 
         // work with ep
-
+        fs::path get_cached_ep_dir();
+        std::vector<str> get_env_pack_names();
     };
 
 }

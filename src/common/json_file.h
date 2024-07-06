@@ -12,4 +12,5 @@ namespace fs = std::filesystem;
 namespace NerMCManager
 {
     json parse_json_file(fs::path file_path);
+    void write_json_file(fs::path file_path, json data);
 }
