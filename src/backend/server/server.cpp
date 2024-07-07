@@ -1,4 +1,5 @@
 #include "server.h"
+#include <spdlog/spdlog.h>
 
 namespace NerMCManager
 {
@@ -9,34 +10,40 @@ namespace NerMCManager
         socket.bind(address);
     }
 
-    void Server::run()
+    void Server::register_json_handlers(JsonHandler handler)
     {
-        using namespace std::chrono_literals;
-        const std::string response_data{"World"};
-
-        for (;;)
-        {
-            zmq::message_t request;
-
-            socket.recv(request, zmq::recv_flags::none);
-            std::cout << "Received " << request.to_string() << std::endl;
-
-            handle_request(request);
-
-            socket.send(zmq::buffer(response_data), zmq::send_flags::none);
-        }
+        request_handler = handler;
     }
 
-    void Server::handle_request(zmq::message_t &request)
+    void Server::run()
     {
-        try
+        spdlog::info("Server is running");
+        for (;;)
         {
-            nlohmann::json json_request = nlohmann::json::parse(request.to_string());
-            std::cout << "Parsed JSON: " << json_request.dump(4) << std::endl;
-        }
-        catch (nlohmann::json::parse_error &e)
-        {
-            std::cerr << "Failed to parse JSON: " << e.what() << std::endl;
+            try
+            {
+                zmq::message_t request;
+
+                socket.recv(request, zmq::recv_flags::none);
+                spdlog::info("Received: {}", request.to_string());
+
+                json request_content = json::parse(request.to_string());
+                spdlog::info("Parsed JSON: {}", request_content.dump());
+
+                json reply_result = request_handler(request_content);
+                socket.send(zmq::buffer(reply_result.dump()), zmq::send_flags::none);
+                spdlog::info("Sent: {}", reply_result.dump());
+            }
+            catch (json::parse_error &e)
+            {
+                spdlog::error("Failed to parse JSON: {}", e.what());
+                continue;
+            }
+            catch (json::exception &e)
+            {
+                spdlog::error("Failed on processing request: {}", e.what());
+                continue;
+            }
         }
     }
 }

@@ -5,9 +5,15 @@
 #include <iostream>
 #include <zmq.hpp>
 #include <nlohmann/json.hpp>
+#include <functional>
+
+using str = std::string;
+using json = nlohmann::json;
 
 namespace NerMCManager
 {
+    using JsonHandler = std::function<json(const json &req_data)>;
+
     class Server
     {
     public:
@@ -15,10 +21,12 @@ namespace NerMCManager
         void run();
 
     private:
-        void handle_request(zmq::message_t &request);
-
         zmq::context_t context;
         zmq::socket_t socket;
+
+        JsonHandler request_handler;
+
+        void register_json_handlers(JsonHandler handler);
     };
 
 }
