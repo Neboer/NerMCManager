@@ -5,7 +5,7 @@ namespace NerMCManager
     std::map<str, fs::path> parse_java_versions(json java_version_json_conf)
     {
         std::map<str, fs::path> java_versions_map;
-        for (auto& [version, path] : java_version_json_conf.items())
+        for (auto &[version, path] : java_version_json_conf.items())
         {
             java_versions_map[version] = fs::path(path);
         }

@@ -20,6 +20,7 @@ namespace NerMCManager
         str java_version;
         str startup_output;
 
+        EnvPack() = default;
         EnvPack(str name, str version, str game_version, ModPlatform mod_platform, str mod_platform_version, str java_version, str startup_output);
         static EnvPack parse_from_json(json ep_json);
         json to_json();

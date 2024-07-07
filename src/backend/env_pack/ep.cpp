@@ -31,4 +31,17 @@ namespace NerMCManager
         return this->name + "-" + this->version;
     }
 
+    json EnvPack::to_json()
+    {
+        json ep_json;
+        ep_json["name"] = this->name;
+        ep_json["version"] = this->version;
+        ep_json["game_version"] = this->game_version;
+        ep_json["mod_platform"] = ModPlatformToString(this->mod_platform);
+        ep_json["mod_platform_version"] = this->mod_platform_version;
+        ep_json["java_version"] = this->java_version;
+        ep_json["startup_output"] = this->startup_output;
+        return ep_json;
+    }
+
 }

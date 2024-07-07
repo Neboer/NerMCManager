@@ -27,7 +27,7 @@ namespace NerMCManager
     }
 
 
-    void Backend::delete_env_pack(str ep_name, str ep_version)
+    EnvPack Backend::delete_env_pack(str ep_name, str ep_version)
     {
         // find if ep_name-ep_version exists in env pack names.
         str ep_fs_name = ep_name + "-" + ep_version;
@@ -40,7 +40,9 @@ namespace NerMCManager
 
         // ep exists, delete it.
         fs::path ep_dir = get_cached_ep_dir() / ep_fs_name;
+        json ep_info = parse_json_file(ep_dir / "ep_info.json");
         fs::remove_all(ep_dir);
+        return EnvPack::parse_from_json(ep_info);
     }
 
 

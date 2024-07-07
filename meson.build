@@ -14,6 +14,7 @@ executable(
         'src/backend/backend.cpp',
         'src/backend/backend_config.cpp',
         'src/backend/main.cpp',
+        'src/backend/protocol/connector.cpp',
         'src/common/variables.cpp',
         'src/common/json_file.cpp',
     ],

@@ -18,9 +18,12 @@ namespace NerMCManager
         Backend(BackendConfig config);
 
         EnvPack create_env_pack(fs::path new_ep_dir);
-        void delete_env_pack(str ep_name, str ep_version);
+        EnvPack delete_env_pack(str ep_name, str ep_version);
         EnvPack rename_env_pack(str ep_name, str ep_version, str new_ep_name, str new_ep_version);
         std::vector<EnvPack> get_env_packs();
+
+        Backend(const Backend &) = delete;
+        Backend &operator=(const Backend &) = delete;
 
     private:
         BackendConfig config;
