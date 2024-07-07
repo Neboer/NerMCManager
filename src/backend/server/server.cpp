@@ -36,13 +36,17 @@ namespace NerMCManager
             }
             catch (json::parse_error &e)
             {
-                spdlog::error("Failed to parse JSON: {}", e.what());
+                str error_reason = e.what();
+                spdlog::error("Failed to parse JSON: {}", error_reason);
+                json error_msg = {{"error", "Failed to parse JSON." + error_reason}};
+
+                socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
                 continue;
             }
-            catch (json::exception &e)
+            catch (zmq::error_t &e)
             {
-                spdlog::error("Failed on processing request: {}", e.what());
-                continue;
+                spdlog::error("Failed on processing message: {}", e.what());
+                throw e;
             }
         }
     }

@@ -1,4 +1,3 @@
-//  Subscribe to the 'status'
 #include <string>
 #include <iostream>
 #include <vector>
