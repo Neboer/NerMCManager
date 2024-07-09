@@ -238,14 +238,25 @@ data_dir/
           xxx
   download_temp/
     MBAMC-Utopia-1.27.tar.gz
+  runtime.db
 ```
 
-## 运行时数据
+## runtime.db
 
-后端在运行中时刻保存着一些数据在内存里。这些数据主要是GI信息。
+一个SQLite数据库文件，里面内容如下：
 
-GI信息（team-ep_name-ep_ver-wd_id）
-游戏PID（是否运行）
+### GAME_INSTANCE_CONFIG
+
+注意，所有的xx_id都表示一个在本地自增的主键或对其的引用。
+
+它需要知道"根据config生成的实例正在运行"，GI在不断改变，但config不变。
+
+| 键名 | 类型 | 说明 |
+|----|----|----|
+| config_id | int | 游戏配置文件的ID |
+| gi_dir | string | team-ep_name-ep_ver-wd_id |
+| running | bool | 是否正在运行 |
+| pid | int | 游戏主线程PID |
 
 ## 使用方法
 

@@ -3,7 +3,6 @@ nlohmann_json = dependency('nlohmann_json')
 #capnproto = dependency('kj')
 spdlog = dependency('spdlog')
 cppzmq = dependency('cppzmq')
-argparse = dependency('argparse')
 executable(
     'nmmd',
     [
@@ -22,8 +21,4 @@ executable(
     dependencies: [nlohmann_json, spdlog, cppzmq],
 )
 
-executable(
-    'nmm',
-    ['src/cli/main.cpp'],
-    dependencies: [nlohmann_json, cppzmq, argparse],
-)
+executable('nmm', ['src/cli/main.cpp'], dependencies: [nlohmann_json, spdlog, cppzmq])
