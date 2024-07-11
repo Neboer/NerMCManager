@@ -17,7 +17,7 @@ namespace NerMCManager
     class Server
     {
     public:
-        Server(const std::string &address);
+        Server(const str &address);
         void run();        
         void register_json_handlers(JsonHandler handler);
 

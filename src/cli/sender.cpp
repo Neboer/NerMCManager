@@ -21,11 +21,9 @@ namespace NerMCManager
 
             if (!result.has_value())
             {
-                // 处理接收消息失败的情况，例如记录日志或者抛出异常
                 throw std::runtime_error("Failed to receive message: " + std::string(zmq_strerror(zmq_errno())));
             }
-
-            return json::parse(static_cast<const char*>(response.data()), static_cast<const char*>(response.data()) + response.size());
+            return json::parse(response.to_string());
         }
         catch (const std::exception &e)
         {

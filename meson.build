@@ -22,11 +22,23 @@ executable(
     dependencies: [nlohmann_json, spdlog, cppzmq],
 )
 
+cli_sources = ['src/cli/sender.cpp']
+cli_deps = [nlohmann_json, cppzmq, argparse]
+
 executable(
     'nmm',
-    [
+    cli_sources
+    + [
         'src/cli/main.cpp',
-        'src/cli/sender.cpp'
     ],
-    dependencies: [nlohmann_json, cppzmq, argparse],
+    dependencies: cli_deps,
+)
+
+executable(
+    'nmm_debug',
+    cli_sources
+    + [
+        'src/cli/debug_client_main.cpp',
+    ],
+    dependencies: cli_deps,
 )

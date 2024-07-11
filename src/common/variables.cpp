@@ -19,15 +19,15 @@ namespace NerMCManager
         }
     }
 
-    ModPlatform StringToModPlatform(const std::string &str)
+    ModPlatform StringToModPlatform(const str &platform_string)
     {
-        static const std::unordered_map<std::string, ModPlatform> strToPlatform{
+        static const std::unordered_map<str, ModPlatform> strToPlatform{
             {"None", None},
             {"Forge", Forge},
             {"Fabric", Fabric},
             {"Bukkit", Bukkit}};
 
-        auto it = strToPlatform.find(str);
+        auto it = strToPlatform.find(platform_string);
         if (it != strToPlatform.end())
         {
             return it->second;

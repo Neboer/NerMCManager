@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
+using str = std::string;
 
 namespace NerMCManager
 {

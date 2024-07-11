@@ -3,7 +3,7 @@
 
 namespace NerMCManager
 {
-    Server::Server(const std::string &address)
+    Server::Server(const str &address)
         : context{1}, socket{context, zmq::socket_type::rep}
     {
         socket.bind(address);
@@ -43,7 +43,7 @@ namespace NerMCManager
             }
             catch (json::parse_error &e)
             {
-                std::string error_reason = e.what();
+                str error_reason = e.what();
                 spdlog::error("Failed to parse JSON: {}", error_reason);
                 json error_msg = {{"error", "Failed to parse JSON: " + error_reason}};
 
@@ -54,20 +54,6 @@ namespace NerMCManager
             {
                 spdlog::error("Failed on processing message: {}", e.what());
                 throw e;
-            }
-            catch (std::bad_function_call &e)
-            {
-                spdlog::error("std::bad_function_call exception: {}", e.what());
-                json error_msg = {{"error", "Internal server error: bad function call."}};
-                socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
-                continue;
-            }
-            catch (std::exception &e)
-            {
-                spdlog::error("Exception: {}", e.what());
-                json error_msg = {{"error", "Internal server error: " + std::string(e.what())}};
-                socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
-                continue;
             }
         }
     }

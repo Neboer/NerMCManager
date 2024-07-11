@@ -1,11 +1,11 @@
 #include "json_file.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace NerMCManager
 {
     json parse_json_file(fs::path file_path)
     {
-
         std::ifstream f(file_path);
         if (!f.is_open()) {
         throw std::runtime_error("Failed to open JSON file: " + file_path.string());
@@ -15,17 +15,13 @@ namespace NerMCManager
     try {
         f >> data;
     } catch (const json::parse_error& e) {
-        // 记录解析错误信息
-        std::cerr << "JSON parse error: " << e.what() << " at byte position " << e.byte << std::endl;
-        // 关闭文件
+        spdlog::error("JSON parse error: {} at byte position {}", e.what(), e.byte);
         f.close();
-        // 抛出异常，传播错误
-        throw std::runtime_error("Failed to parse JSON file: " + std::string(e.what()));
+        throw std::runtime_error("Failed to parse JSON file: " + str(e.what()));
     } catch (const std::exception& e) {
-        // 其他可能的异常处理
-        std::cerr << "Error reading JSON file: " << e.what() << std::endl;
+        spdlog::error("Error reading JSON file: {}", e.what());
         f.close();
-        throw; // 继续抛出异常
+        throw;
     }
 
     f.close();
