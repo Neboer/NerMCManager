@@ -15,11 +15,12 @@ namespace NerMCManager
     class Sender
     {
     public:
-        zmq::context_t context;
-        zmq::socket_t client;
-
         Sender();
         json request(const json &request_content);
+
+    private:
+        zmq::context_t context;
+        zmq::socket_t client;
     };
 
 }
