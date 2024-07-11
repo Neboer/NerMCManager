@@ -3,7 +3,6 @@
 
 namespace NerMCManager
 {
-
     Server::Server(const std::string &address)
         : context{1}, socket{context, zmq::socket_type::rep}
     {
@@ -30,15 +29,23 @@ namespace NerMCManager
                 json request_content = json::parse(request.to_string());
                 spdlog::info("Parsed JSON: {}", request_content.dump());
 
+                if (!request_handler)
+                {
+                    spdlog::error("request_handler is not initialized!");
+                    json error_msg = {{"error", "Internal server error: request handler not set."}};
+                    socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
+                    continue;
+                }
+
                 json reply_result = request_handler(request_content);
                 socket.send(zmq::buffer(reply_result.dump()), zmq::send_flags::none);
                 spdlog::info("Sent: {}", reply_result.dump());
             }
             catch (json::parse_error &e)
             {
-                str error_reason = e.what();
+                std::string error_reason = e.what();
                 spdlog::error("Failed to parse JSON: {}", error_reason);
-                json error_msg = {{"error", "Failed to parse JSON." + error_reason}};
+                json error_msg = {{"error", "Failed to parse JSON: " + error_reason}};
 
                 socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
                 continue;
@@ -47,6 +54,20 @@ namespace NerMCManager
             {
                 spdlog::error("Failed on processing message: {}", e.what());
                 throw e;
+            }
+            catch (std::bad_function_call &e)
+            {
+                spdlog::error("std::bad_function_call exception: {}", e.what());
+                json error_msg = {{"error", "Internal server error: bad function call."}};
+                socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
+                continue;
+            }
+            catch (std::exception &e)
+            {
+                spdlog::error("Exception: {}", e.what());
+                json error_msg = {{"error", "Internal server error: " + std::string(e.what())}};
+                socket.send(zmq::buffer(error_msg.dump()), zmq::send_flags::none);
+                continue;
             }
         }
     }

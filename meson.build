@@ -24,6 +24,9 @@ executable(
 
 executable(
     'nmm',
-    ['src/cli/main.cpp'],
+    [
+        'src/cli/main.cpp',
+        'src/cli/sender.cpp'
+    ],
     dependencies: [nlohmann_json, cppzmq, argparse],
 )

@@ -12,6 +12,9 @@ int main()
     NerMCManager::Server server{"tcp://*:6223"};
     NerMCManager::Connector connector{
         NerMCManager::Backend{config}};
+    server.register_json_handlers([&connector](const json& request) {
+        return connector.process_packet(request);
+    });
 
     server.run();
 
