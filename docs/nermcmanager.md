@@ -238,14 +238,25 @@ data_dir/
           xxx
   download_temp/
     MBAMC-Utopia-1.27.tar.gz
+  runtime.db
 ```
 
-## 运行时数据
+## runtime.db
 
-后端在运行中时刻保存着一些数据在内存里。这些数据主要是GI信息。
+一个SQLite数据库文件，里面内容如下：
 
-GI信息（team-ep_name-ep_ver-wd_id）
-游戏PID（是否运行）
+### GAME_INSTANCE_CONFIG
+
+注意，所有的xx_id都表示一个在本地自增的主键或对其的引用。
+
+它需要知道"根据config生成的实例正在运行"，GI在不断改变，但config不变。
+
+| 键名 | 类型 | 说明 |
+|----|----|----|
+| config_id | int | 游戏配置文件的ID |
+| gi_dir | string | team-ep_name-ep_ver-wd_id |
+| running | bool | 是否正在运行 |
+| pid | int | 游戏主线程PID |
 
 ## 使用方法
 
@@ -253,19 +264,19 @@ GI信息（team-ep_name-ep_ver-wd_id）
 
 ### nmm ep list
 
-### nmm ep create <path> -t \<tag:version>
+### nmm ep create <path> -t <name-version>
 
 根据path中路径中的内容，创建一个环境包，名字叫tag，版本叫version。
 
-### nmm ep delete -t \<tag:version>
+### nmm ep delete -t <name-version>
 
 如果有gi在使用此ep，不能删除ep。
 
-### nmm ep rename -t \<tag:version> \<tag:version>
+### nmm ep rename -t <name-version> <name-version>
 
 如果有gi在使用此ep，不能重命名。
 
-### \~ nmm ep pull/push \<tag:version>
+### \~ nmm ep pull/push name-version
 
 ### nmm gi list
 
@@ -295,7 +306,7 @@ GI不能改名，可以停止，启动后需要把PID存数据库。
 
 ### nmm wd list
 
-### nmm wd import \<path> -t \<ep_name:version> —name <name>
+### nmm wd import <path> -t <ep_name-version> —name <name>
 
 把一个非NMM创建的世界导入。这个世界属于哪个ep，由-t指定。
 
