@@ -9,9 +9,9 @@ using str = std::string;
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-void splitByHyphen(const std::string& input, std::string& left, std::string& right) {
+void splitByHyphen(const str& input, str& left, str& right) {
     size_t hyphenPos = input.find('-');
-    if (hyphenPos != std::string::npos) {
+    if (hyphenPos != str::npos) {
         left = input.substr(0, hyphenPos);
         right = input.substr(hyphenPos + 1);
     } else {
