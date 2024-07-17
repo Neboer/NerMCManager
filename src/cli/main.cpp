@@ -20,7 +20,7 @@ void splitByHyphen(const str& input, str& left, str& right) {
 }
 
 
-json cli(const str& command, const str& subcommand, const str& path, const str& name, const str& version, const str& new_name, const str& new_version) {
+json cli(const str& command, const str& subcommand, const str& path, const str& name, const str& version, const str& new_name, const str& new_version, const str& new_wd_name) {
     json jsonData;
 
     try {
@@ -41,15 +41,25 @@ json cli(const str& command, const str& subcommand, const str& path, const str& 
                 jsonData["args"]["new_ep_name"] = new_name;
                 jsonData["args"]["new_ep_version"] = new_version;
             }
-            std::cout << "Now the JSON is..." << jsonData.dump(4) << std::endl;
+            
         }
         else if (command == "gi")
         {
+            if (subcommand == "list"){
+                jsonData["type"] = "get_game_instance";
+            }
         }
         else if (command == "wd")
         {
+            if (subcommand == "list"){
+                jsonData["type"] = "get_world_data";
+            }else if (subcommand == "import")
+            {
+                jsonData["type"] = "import_wd";
+                jsonData["args"]["new_ed_dir"] = path;  
+                jsonData["args"]["wd_name"] = new_wd_name;
+            }
         }
-        
         else {
             std::cout << "Unexpected input! Available: ep. You: " << command << std::endl;
             jsonData["error"] = "Invalid command";
@@ -57,7 +67,7 @@ json cli(const str& command, const str& subcommand, const str& path, const str& 
     } catch (const fs::filesystem_error& e) {
         std::cerr << "Filesystem error: " << e.what() << std::endl;
     }
-
+    std::cout << "Now the JSON is..." << jsonData.dump(4) << std::endl;
     return jsonData;
 }
 
@@ -72,16 +82,16 @@ int main(int argc, const char** argv) {
     program.add_argument("subcommand")
         .help("subcommand to execute (list, create, delete, rename)");
 
-    // program.add_argument("-t")
-    //     .help("environment pack name and version (e.g. name-version)")
-    //     .default_value("");
-
     program.add_argument("path")
         .help("path for create ")
         .default_value("");
 
-    program.add_argument("name-version")
+    program.add_argument("-t", "name-version", "new-name-version")
         .help("new name and version for rename")
+        .default_value("");
+
+    program.add_argument("-name", "wd-name")
+        .help("wd name for import")
         .default_value("");
 
     try {
@@ -96,16 +106,18 @@ int main(int argc, const char** argv) {
     str subcommand = program.get<str>("subcommand");
     str path = program.get<str>("path");
     str name_version = program.get<str>("name-version");
+    str new_name_version = program.get<str>("new-name-version");
+    str new_wd_name = program.get<str>("wd-name");
     
     str name = "";
     str version = "";
     str new_name = "";
     str new_version = "";
 
-    splitByHyphen(path, name, version);
-    splitByHyphen(name_version, new_name, new_version);
+    splitByHyphen(name_version, name, version);
+    splitByHyphen(new_name_version, new_name, new_version);
 
-    json request_content = cli(command, subcommand, path, name, version, new_name, new_version);
+    json request_content = cli(command, subcommand, path, name, version, new_name, new_version, new_wd_name);
 
     json response = sender.request(request_content);
 
