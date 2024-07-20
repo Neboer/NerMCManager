@@ -1,9 +1,10 @@
 #include <iostream>
-#include <filesystem>
-#include <fstream>
-#include "sender.h"
-#include <nlohmann/json.hpp>
 #include <argparse/argparse.hpp>
+#include <nlohmann/json.hpp>
+#include "sender.h"
+#include "command/ep_command.h"
+#include "command/gi_command.h"
+#include "command/wd_command.h"
 
 using str = std::string;
 using json = nlohmann::json;
@@ -19,56 +20,43 @@ void splitByHyphen(const str& input, str& left, str& right) {
     }
 }
 
+void print_json(const json& j, int indent = 0) {
+    str indent_space(indent, ' ');
+    if (j.is_object()) {
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::cout << indent_space << it.key() << ": ";
+            print_json(it.value(), indent + 4);
+        }
+    } else if (j.is_array()) {
+        for (const auto& item : j) {
+            print_json(item, indent + 4);
+        }
+    } else if (j.is_string()) {
+        std::cout << j.get<str>() << std::endl;
+    } else if (j.is_number_integer()) {
+        std::cout << j.get<int>() << std::endl;
+    } else if (j.is_number_float()) {
+        std::cout << j.get<double>() << std::endl;
+    } else if (j.is_boolean()) {
+        std::cout << (j.get<bool>() ? "true" : "false") << std::endl;
+    } else if (j.is_null()) {
+        std::cout << "null" << std::endl;
+    }
+}
 
 json cli(const str& command, const str& subcommand, const str& path, const str& name, const str& version, const str& new_name, const str& new_version, const str& new_wd_name) {
-    json jsonData;
-
-    try {
-        if (command == "ep") {
-            if (subcommand == "list") {
-                jsonData["type"] = "get_env_packs";            
-            } else if (subcommand == "create") {
-                jsonData["type"] = "create_env_pack";
-                jsonData["args"]["new_ep_dir"] = path;            
-            } else if (subcommand == "delete") {
-                jsonData["type"] = "delete_env_pack";
-                jsonData["args"]["ep_name"] = name;
-                jsonData["args"]["ep_version"] = version;
-            } else if (subcommand == "rename") {
-                jsonData["type"] = "rename_env_pack";
-                jsonData["args"]["ep_name"] = name;
-                jsonData["args"]["ep_version"] = version;
-                jsonData["args"]["new_ep_name"] = new_name;
-                jsonData["args"]["new_ep_version"] = new_version;
-            }
-            
-        }
-        else if (command == "gi")
-        {
-            if (subcommand == "list"){
-                jsonData["type"] = "get_game_instance";
-            }
-        }
-        else if (command == "wd")
-        {
-            if (subcommand == "list"){
-                jsonData["type"] = "get_world_data";
-            }else if (subcommand == "import")
-            {
-                jsonData["type"] = "import_wd";
-                jsonData["args"]["new_ed_dir"] = path;  
-                jsonData["args"]["wd_name"] = new_wd_name;
-            }
-        }
-        else {
-            std::cout << "Unexpected input! Available: ep. You: " << command << std::endl;
-            jsonData["error"] = "Invalid command";
-        }
-    } catch (const fs::filesystem_error& e) {
-        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    if (command == "ep") {
+        return handle_ep_command(subcommand, path, name, version, new_name, new_version);
+    } else if (command == "gi") {
+        return handle_gi_command(subcommand);
+    } else if (command == "wd") {
+        return handle_wd_command(subcommand, path, new_wd_name);
+    } else {
+        json jsonData;
+        std::cerr << "Unexpected input! Available commands: ep, gi, wd. You entered: " << command << std::endl;
+        jsonData["error"] = "Invalid command";
+        return jsonData;
     }
-    std::cout << "Now the JSON is..." << jsonData.dump(4) << std::endl;
-    return jsonData;
 }
 
 int main(int argc, const char** argv) {
@@ -77,13 +65,13 @@ int main(int argc, const char** argv) {
     argparse::ArgumentParser program("nmm");
 
     program.add_argument("command")
-        .help("command to execute (ep)");
+        .help("command to execute (ep, gi, wd)");
 
     program.add_argument("subcommand")
-        .help("subcommand to execute (list, create, delete, rename)");
+        .help("subcommand to execute (list, create, delete, rename, import)");
 
     program.add_argument("path")
-        .help("path for create ")
+        .help("path for create or import")
         .default_value("");
 
     program.add_argument("-t", "name-version", "new-name-version")
@@ -121,7 +109,7 @@ int main(int argc, const char** argv) {
 
     json response = sender.request(request_content);
 
-    std::cout << "Response received: " << response.dump(4) << std::endl;
+    print_json(response);
 
     return 0;
 }
