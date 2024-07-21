@@ -15,7 +15,7 @@ namespace NerMCManager
         catch (const std::exception &e)
         {
             spdlog::error("process_packet: Error while processing packet: {}", e.what());
-            return {{"error", "Error while processing packet."}};
+            return {{"error", "Error while processing packet."}, {"details", e.what()}};
         }
     }
 

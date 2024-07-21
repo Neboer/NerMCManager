@@ -16,15 +16,15 @@ namespace NerMCManager
 
     class Server
     {
-    public:
+        public:
         Server(const str &address);
         void run();        
         void register_json_handlers(JsonHandler handler);
-
-    private:
+    
+        private:
         zmq::context_t context;
         zmq::socket_t socket;
-
+    
         JsonHandler request_handler;
     };
 }
