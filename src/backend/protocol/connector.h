@@ -13,7 +13,6 @@ namespace NerMCManager
 
         private:
         json execute_packet(const json &req_data);
-
     };
 
 }

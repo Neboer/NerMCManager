@@ -23,11 +23,13 @@ executable(
 )
 
 cli_sources = ['src/cli/sender.cpp']
+cli_command = ['src/cli/command/ep_command.cpp', 'src/cli/command/gi_command.cpp', 'src/cli/command/wd_command.cpp']
 cli_deps = [nlohmann_json, cppzmq, argparse]
 
 executable(
     'nmm',
-    cli_sources
+    cli_sources,
+    cli_command
     + [
         'src/cli/main.cpp',
     ],
